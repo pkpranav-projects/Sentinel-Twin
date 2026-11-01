@@ -1,7 +1,8 @@
 <div align="center">
 
-# Sentinel Twin: Android Mobile Security & Behavioral Digital Twin Framework
+# Sentinel Twin: Android Endpoint Security & Behavioral Digital Twin Framework
 
+[![Android CI](https://github.com/pkpranav-projects/Sentinel-Twin/actions/workflows/android.yml/badge.svg)](https://github.com/pkpranav-projects/Sentinel-Twin/actions/workflows/android.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0%2B-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Material 3](https://img.shields.io/badge/Design-Material%203-7986CB?style=for-the-badge)](https://m3.material.io/)
@@ -12,7 +13,7 @@
 
 A proactive Android endpoint security system that creates an in-memory **Behavioral Digital Twin** of your mobile device, continuously contrasting real-time telemetry against learned operational baselines to detect stealthy zero-day deviations, privilege abuse, and persistent device drift.
 
-[Core Concept](#-the-digital-twin-security-paradigm) • [Engine Architecture](#-engine-architecture--data-pipeline) • [Compose UI Suite](#-compose-screen-suite) • [Demo Scenarios](#-pre-configured-demo-scenarios) • [Build & Install](#-build--installation) • [Author](#-author)
+[Core Concept](#-the-digital-twin-security-paradigm) • [Reasoning Engine](#-deterministic-reasoner--causal-inference) • [Demo State Machine](#-5-stage-simulation-lifecycle) • [Compose Screens](#-compose-screen-suite) • [1-Click Build](#-1-click-build--installation) • [Author](#-author)
 
 </div>
 
@@ -20,9 +21,9 @@ A proactive Android endpoint security system that creates an in-memory **Behavio
 
 ## The Digital Twin Security Paradigm
 
-Traditional mobile antivirus solutions rely primarily on static signature scanning—checking if installed package names or file hashes match known malware catalogs. Sophisticated spyware, unauthorized telemetry exfiltration, and root compromises easily evade signature scanners by mutating code or leveraging legitimate Android permissions.
+Traditional mobile antivirus tools rely primarily on static signature scanning—checking if installed package names or file hashes match known malware catalogs. Sophisticated spyware, unauthorized telemetry exfiltration, and root compromises easily evade signature scanners by mutating code or abusing legitimate Android framework permissions.
 
-**Sentinel Twin** introduces a modern paradigm:
+**Sentinel Twin** establishes a continuous, dynamic behavioral baseline:
 
 ```text
 +-------------------+        Live Telemetry        +----------------------+
@@ -48,100 +49,95 @@ Traditional mobile antivirus solutions rely primarily on static signature scanni
 
 ---
 
-## Engine Architecture & Data Pipeline
+## Deterministic Reasoner & Causal Inference
 
-The codebase is engineered strictly following modern Android development practices (Clean Architecture, Kotlin Coroutines, StateFlow, Room ORM, and Jetpack Compose):
+Unlike black-box neural networks that hallucinate false positives, Sentinel Twin employs a formal **Deterministic Reasoner**:
 
-```text
-com.example.sentineltwin/
-├── device/
-│   ├── Adapters.kt            # Hardware and OS subsystem telemetry adapters
-│   └── SnapshotNormalizer.kt  # Canonical schema transformer for raw system snapshots
-├── twin/
-│   ├── BaselineEngine.kt      # Statistical baseline computation and rolling calibration
-│   ├── DriftEngine.kt         # Delta-distance calculation between baseline and live state
-│   └── TwinRepository.kt      # State synchronization layer managing digital twin state
-├── reasoning/
-│   ├── DeterministicReasoner.kt # Transparent rule evaluation and threat severity scoring
-│   └── EvidenceBuilder.kt       # Causal evidence graph construction for forensic audit
-├── local/
-│   └── SnapshotEntity.kt      # Room ORM database entity for persistent audit logging
-└── ui/
-    ├── MainScreen.kt          # Primary health overview, live risk gauges, and telemetry cards
-    ├── TwinScreen.kt          # Side-by-side visualization of physical vs digital twin states
-    ├── TimelineScreen.kt      # Historical anomaly timeline and drift escalation feed
-    ├── SandboxScreen.kt       # Controlled threat simulation environment
-    └── InvestigateScreen.kt   # Deep forensic inspector with evidence breakdown
+| Observed Signal Pattern | Diagnostic Hypothesis | Causation Analysis | Engine Confidence |
+| :--- | :--- | :--- | :---: |
+| **Elevated Temp (> 40°C) + High Workload (> 85%)** | Uncontrolled Computational Bursts | Unusually high process execution is generating excess CPU thermal dissipation. | **HIGH** |
+| **Elevated Temp (> 40°C) + Battery Charging** | Normal Exogenous Thermal Spike | Device battery charge cycle naturally elevates internal temperature envelope. | **HIGH** |
+| **Elevated Temp (> 40°C) + Low Workload (< 20%)** | Stealth Background Radio Exfiltration | Suspicious hardware subsystem activity while main execution thread is dormant. | **CRITICAL** |
+| **Normal Temp (< 35°C) + Normal Workload (< 30%)** | Baseline Operational Equilibrium | All physical device signals align within the learned virtual digital twin baseline. | **NOMINAL** |
+
+---
+
+## 5-Stage Simulation Lifecycle
+
+Sentinel Twin features a built-in deterministic state machine (`DemoScenario.kt`) allowing researchers, hackathon judges, and auditors to verify detection pipelines without deploying real malware:
+
+```mermaid
+stateDiagram-v2
+    [*] --> NORMAL_BASELINE: Cold Boot / Calibration
+    NORMAL_BASELINE --> WORKLOAD_RISE: Synthetic Task Burst
+    WORKLOAD_RISE --> THERMAL_RISE: Sustained CPU Utilization
+    THERMAL_RISE --> DRIFT_DETECTED: Exceeds Twin Envelope (Health: 30%)
+    DRIFT_DETECTED --> RECOVERY: Automated Mitigation / Throttle
+    RECOVERY --> NORMAL_BASELINE: Baseline Re-stabilized (Health: 90%)
 ```
+
+- **Stage 1 (`NORMAL_BASELINE`)**: Battery 85%, Temp 32°C, Workload 10%, Twin Health 90%.
+- **Stage 2 (`WORKLOAD_RISE`)**: Battery 82%, Temp 36°C, Workload 85%.
+- **Stage 3 (`THERMAL_RISE`)**: Battery 75%, Temp 41°C, Workload 90%, Severe Thermal Status.
+- **Stage 4 (`DRIFT_DETECTED`)**: Battery 70%, Temp 44°C, Workload 95%, Health drops to 30%.
+- **Stage 5 (`RECOVERY`)**: Battery 69%, Temp 35°C, Workload 15%, Health recovers to 90%.
 
 ---
 
 ## Compose Screen Suite
 
-| Screen | Primary Functionality |
+| Screen | Architectural Responsibility |
 | :--- | :--- |
 | **Main Dashboard** (`MainScreen`) | Real-time endpoint health gauge, overall drift percentage, quick status chips, and immediate security action recommendations. |
-| **Digital Twin Explorer** (`TwinScreen`) | High-tech visual comparison rendering the live physical device status alongside its virtual digital twin counterpart. |
+| **Digital Twin Explorer** (`TwinScreen`) | High-tech visual comparison rendering the live physical device status alongside its virtual digital twin counterpart. Includes Hackathon Rubric badges. |
 | **Anomaly Timeline** (`TimelineScreen`) | Chronological feed of recorded telemetry snapshots, highlighting points where system parameters drifted past safety thresholds. |
 | **Interactive Sandbox** (`SandboxScreen`) | An isolated testing playground allowing developers and auditors to trigger controlled parameter drifts and observe engine reactions. |
 | **Forensic Investigation** (`InvestigateScreen`) | Detailed breakdown of detected security anomalies with causal evidence trails, telemetry diffs, and risk scores. |
 
 ---
 
-## Pre-Configured Demo Scenarios
-
-Sentinel Twin includes an integrated `DemoScenario` runner designed for evaluations, hackathon presentations, and academic research without requiring real malicious malware:
-
-- **Background Exfiltration Simulation**: Simulates unauthorized background radio activation and anomalous packet bursts outside established diurnal baselines.
-- **Sensor Stalking Drift**: Replicates an unforegrounded application quietly harvesting location or sensor telemetry.
-- **Privilege / Configuration Mutation**: Emulates unexpected system property alterations and unauthorized setting mutations.
-
----
-
-## Build & Installation
+## 1-Click Build & Installation
 
 ### Prerequisites
-- **Android Studio** (Hedgehog | Iguana | Jellyfish or newer)
 - **JDK 17+**
 - **Android SDK Platform 34** (Target API 34, Min API 24)
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/pkpranav-projects/Sentinel-Twin.git
-cd Sentinel-Twin
+### Automated 1-Click Build Scripts
+
+**On Windows:**
+```powershell
+.\build.bat
 ```
 
-### 2. Build Debug APK via Gradle
+**On Linux / macOS:**
 ```bash
-# On Linux / macOS:
-./gradlew assembleDebug
+chmod +x build.sh
+./build.sh
+```
 
-# On Windows:
-.\gradlew.bat assembleDebug
+*(Or build directly using the Gradle wrapper)*:
+```bash
+./gradlew assembleDebug --no-daemon
 ```
 
 The compiled APK will be generated at:
 `app/build/outputs/apk/debug/app-debug.apk`
 
-### 3. Install Directly to Connected Device or Emulator
+### Install Directly to Connected Device via ADB
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
-*(Or run `./gradlew installDebug` with an active device connected over USB / ADB)*.
 
 ---
 
-## Testing
+## Automated CI/CD Pipeline
 
-Run unit tests and Android instrumentation tests:
-
-```bash
-# Unit tests
-./gradlew testDebugUnitTest
-
-# Connected UI & ViewModel tests
-./gradlew connectedDebugAndroidTest
-```
+Every push to `master` automatically triggers the GitHub Actions workflow [`.github/workflows/android.yml`](.github/workflows/android.yml):
+- Sets up JDK 17 (Temurin).
+- Validates Gradle wrapper dependencies.
+- Executes `./gradlew testDebugUnitTest` unit tests.
+- Compiles the debug APK and uploads it as a downloadable GitHub Actions artifact.
+- Automatically attaches the compiled APK to release tags (`v*`).
 
 ---
 
@@ -149,23 +145,40 @@ Run unit tests and Android instrumentation tests:
 
 ```text
 Sentinel-Twin/
+├── .github/
+│   └── workflows/
+│       └── android.yml              # Automated GitHub Actions CI & APK pipeline
 ├── app/
 │   ├── src/main/java/com/example/sentineltwin/
 │   │   ├── MainActivity.kt          # Single-activity Compose container
 │   │   ├── Navigation.kt            # Compose Navigation routes and graph
-│   │   ├── domain/                  # Clean domain models and types
-│   │   ├── device/                  # System adapters and snapshot normalization
-│   │   ├── twin/                    # Digital twin baseline and drift computation
-│   │   ├── reasoning/               # Deterministic rule engine & evidence builder
-│   │   ├── local/                   # Room database entities and DAOs
-│   │   ├── demo/                    # Pre-packaged evaluation scenarios
-│   │   └── ui/                      # Jetpack Compose UI screens and themes
-│   ├── build.gradle.kts             # App-level build configuration and dependencies
-│   └── AndroidManifest.xml          # Permissions and application metadata
-├── gradle/                          # Gradle wrapper assets
-├── build.gradle.kts                 # Root project build configuration
-├── settings.gradle.kts              # Module and repository definitions
-└── README.md                        # Framework documentation
+│   │   ├── demo/
+│   │   │   └── DemoScenario.kt      # 5-stage synthetic drift state machine
+│   │   ├── device/
+│   │   │   ├── Adapters.kt          # Subsystem telemetry sensors
+│   │   │   └── SnapshotNormalizer.kt # Schema normalizer
+│   │   ├── domain/
+│   │   │   └── DomainTypes.kt       # Immutable domain data models
+│   │   ├── local/
+│   │   │   └── SnapshotEntity.kt    # Room database entities
+│   │   ├── reasoning/
+│   │   │   ├── DeterministicReasoner.kt # Causal inference logic
+│   │   │   └── EvidenceBuilder.kt   # Forensic evidence DAG
+│   │   ├── theme/                   # Material 3 colors, typography & shapes
+│   │   ├── twin/
+│   │   │   ├── BaselineEngine.kt    # Dynamic baseline learning
+│   │   │   ├── DriftEngine.kt       # Telemetry delta calculation
+│   │   │   └── TwinRepository.kt    # State synchronization
+│   │   └── ui/                      # Jetpack Compose UI suite
+│   ├── build.gradle.kts             # App dependencies & SDK definitions
+│   └── AndroidManifest.xml          # Permissions & activity manifest
+├── build.bat                        # 1-click Windows build script
+├── build.sh                         # 1-click Linux/macOS build script
+├── gradlew                          # Linux Gradle wrapper
+├── gradlew.bat                      # Windows Gradle wrapper
+├── make_icons.py                    # Multi-density app icon generator
+├── LICENSE                          # MIT License
+└── README.md                        # Framework architecture documentation
 ```
 
 ---
